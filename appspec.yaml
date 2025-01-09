@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: login-app
+        TaskDefinition: ECSDef
         LoadBalancerInfo:
-          ContainerName: "flask-app"
+          ContainerName: "ecs"
           ContainerPort: 5000
