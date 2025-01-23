@@ -5,30 +5,35 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
   build:
     commands:
-      - echo Build started on date
+      - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
   post_build:
     commands:
-      - echo Build completed on date
+      - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo Writing definition files...
-      # Get current task definition
-      - aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query taskDefinition > taskdef.json
-      # Create appspec.yaml
-      - echo '{"ImageURI":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG'"}' > imageDetail.json
+
+      # Fetch the current task definition
+      - echo Fetching current task definition...
+      - TASK_DEF=$(aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query 'taskDefinition.taskDefinitionArn' --output text)
+      - echo Task definition fetched: $TASK_DEF
+
+      # Create updated appspec.yaml
+      - echo Writing updated AppSpec file...
       - |
-        cat << 'EOF' > appspec.yaml
+        cat <<EOF > appspec.yaml
         version: 0.0
         Resources:
           - TargetService:
               Type: AWS::ECS::Service
               Properties:
-                TaskDefinition: <TASK_DEFINITION>
+                TaskDefinition: "$TASK_DEF"
                 LoadBalancerInfo:
                   ContainerName: "flask-login-app"
                   ContainerPort: 5000
@@ -37,7 +42,6 @@ phases:
 
 artifacts:
   files:
-    - imageDetail.json
     - appspec.yaml
     - taskdef.json
   discard-paths: yes
