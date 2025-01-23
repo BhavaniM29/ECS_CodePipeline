@@ -3,8 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "first_App-CompleteSetUp"
+        TaskDefinition: "imagedefinitions.json"
         LoadBalancerInfo:
           ContainerName: "flask-login-app"
           ContainerPort: 5000
-        PlatformVersion: "LATEST"
