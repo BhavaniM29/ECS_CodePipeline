@@ -8,31 +8,16 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo Writing definition files...
       - aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query taskDefinition > taskdef.json
       - sed -i 's|"image": "[^"]*"|"image": "<IMAGE1_NAME>"|' taskdef.json
-      - echo '{"ImageURI":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG'"}' > imageDetail.json
-      - |
-        cat << EOF > appspec.yaml
-        version: 0.0
-        Resources:
-          - TargetService:
-              Type: AWS::ECS::Service
-              Properties:
-                TaskDefinition: <TASK_DEFINITION>
-                LoadBalancerInfo:
-                  ContainerName: "flask-login-app"
-                  ContainerPort: 5000
-                PlatformVersion: "LATEST"
-        EOF
+      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imageDetail.json
+      - printf 'version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: <TASK_DEFINITION>\n        LoadBalancerInfo:\n          ContainerName: "flask-login-app"\n          ContainerPort: 5000\n        PlatformVersion: "LATEST"' > appspec.yaml
 
 artifacts:
   files:
