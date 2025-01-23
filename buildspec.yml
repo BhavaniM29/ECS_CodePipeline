@@ -7,26 +7,34 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
-      - echo Build started on `date`
+      - echo Build started on date
+      - echo Building the Docker image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo Build completed on date
+      - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Writing definition files...
+      # Get current task definition and modify image
       - aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query taskDefinition > taskdef.json
       - sed -i 's|"image": "[^"]*"|"image": "<IMAGE1_NAME>"|' taskdef.json
-      - echo "{\"ImageURI\":\"$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG\"}" > imageDetail.json
-      - echo "version: 0.0" > appspec.yaml
-      - echo "Resources:" >> appspec.yaml
-      - echo "  - TargetService:" >> appspec.yaml
-      - echo "      Type: AWS::ECS::Service" >> appspec.yaml
-      - echo "      Properties:" >> appspec.yaml
-      - echo "        TaskDefinition: <TASK_DEFINITION>" >> appspec.yaml
-      - echo "        LoadBalancerInfo:" >> appspec.yaml
-      - echo "          ContainerName: \"flask-login-app\"" >> appspec.yaml
-      - echo "          ContainerPort: 5000" >> appspec.yaml
-      - echo "        PlatformVersion: \"LATEST\"" >> appspec.yaml
+      # Create appspec.yaml
+      - echo '{"ImageURI":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG'"}' > imageDetail.json
+      - |
+        cat << 'EOF' > appspec.yaml
+        version: 0.0
+        Resources:
+          - TargetService:
+              Type: AWS::ECS::Service
+              Properties:
+                TaskDefinition: <TASK_DEFINITION>
+                LoadBalancerInfo:
+                  ContainerName: "flask-login-app"
+                  ContainerPort: 5000
+                PlatformVersion: "LATEST"
+        EOF
 
 artifacts:
   files:
