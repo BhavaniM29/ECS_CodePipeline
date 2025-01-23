@@ -7,3 +7,4 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "flask-login-app"
           ContainerPort: 5000
+        PlatformVersion: "LATEST"
