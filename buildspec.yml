@@ -28,7 +28,7 @@ phases:
           - TargetService:
               Type: AWS::ECS::Service
               Properties:
-                TaskDefinition: "first_App-CompleteSetUp"
+                TaskDefinition: <TASK_DEFINITION>
                 LoadBalancerInfo:
                   ContainerName: "flask-login-app"
                   ContainerPort: 5000
