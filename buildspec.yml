@@ -16,8 +16,17 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query taskDefinition > taskdef.json
       - sed -i 's|"image": "[^"]*"|"image": "<IMAGE1_NAME>"|' taskdef.json
-      - printf '{"ImageURI":"%s"}' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imageDetail.json
-      - printf 'version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: <TASK_DEFINITION>\n        LoadBalancerInfo:\n          ContainerName: "flask-login-app"\n          ContainerPort: 5000\n        PlatformVersion: "LATEST"' > appspec.yaml
+      - echo "{\"ImageURI\":\"$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG\"}" > imageDetail.json
+      - echo "version: 0.0" > appspec.yaml
+      - echo "Resources:" >> appspec.yaml
+      - echo "  - TargetService:" >> appspec.yaml
+      - echo "      Type: AWS::ECS::Service" >> appspec.yaml
+      - echo "      Properties:" >> appspec.yaml
+      - echo "        TaskDefinition: <TASK_DEFINITION>" >> appspec.yaml
+      - echo "        LoadBalancerInfo:" >> appspec.yaml
+      - echo "          ContainerName: \"flask-login-app\"" >> appspec.yaml
+      - echo "          ContainerPort: 5000" >> appspec.yaml
+      - echo "        PlatformVersion: \"LATEST\"" >> appspec.yaml
 
 artifacts:
   files:
