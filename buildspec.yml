@@ -40,8 +40,21 @@ phases:
                 PlatformVersion: "LATEST"
         EOF
 
+      # Create imagedefinitions.json
+      - echo Writing image definitions file...
+      - |
+        cat <<EOF > imagedefinitions.json
+        [
+          {
+            "name": "flask-login-app",
+            "imageUri": "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG"
+          }
+        ]
+        EOF
+
 artifacts:
   files:
     - appspec.yaml
     - taskdef.json
+    - imagedefinitions.json
   discard-paths: yes
