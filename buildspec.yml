@@ -21,8 +21,8 @@ phases:
 
       # Fetch the current task definition
       - echo Fetching current task definition...
-      - TASK_DEF=$(aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query 'taskDefinition.taskDefinitionArn' --output text)
-      - echo Task definition fetched: $TASK_DEF
+      - aws ecs describe-task-definition --task-definition first_App-CompleteSetUp --query 'taskDefinition' --output json > taskdef.json
+      - echo Task definition fetched and saved to taskdef.json
 
       # Create updated appspec.yaml
       - echo Writing updated AppSpec file...
@@ -33,7 +33,7 @@ phases:
           - TargetService:
               Type: AWS::ECS::Service
               Properties:
-                TaskDefinition: "$TASK_DEF"
+                TaskDefinition: !Sub '${TaskDefArn}'
                 LoadBalancerInfo:
                   ContainerName: "flask-login-app"
                   ContainerPort: 5000
