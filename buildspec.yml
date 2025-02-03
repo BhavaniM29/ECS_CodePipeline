@@ -33,9 +33,9 @@ phases:
           - TargetService:
               Type: AWS::ECS::Service
               Properties:
-                TaskDefinition: "arn:aws:ecs:us-east-1:850995548542:task-definition/first_App-CompleteSetUp"
+                TaskDefinition: "arn:aws:ecs:us-east-1:850995548542:task-definition/flask-app-final-taskdef"
                 LoadBalancerInfo:
-                  ContainerName: "flask-login-app"
+                  ContainerName: "flask-app-final"
                   ContainerPort: 5000
                 PlatformVersion: "LATEST"
         EOF
@@ -46,8 +46,8 @@ phases:
         cat <<EOF > imagedefinitions.json
         [
           {
-            "name": "flask-login-app",
-            "imageUri": "850995548542.dkr.ecr.us-east-1.amazonaws.com/flask-login-app:latest"
+            "name": "flask-app-final",
+            "imageUri": "850995548542.dkr.ecr.us-east-1.amazonaws.com/flask-app-final:latest"
           }
         ]
         EOF
