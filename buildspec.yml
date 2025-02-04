@@ -21,7 +21,7 @@ phases:
 
       # Fetch the current task definition
       - echo Fetching current task definition...
-      - aws ecs describe-task-definition --task-definition flask-app-final-taskdef --query 'taskDefinition' --output json > taskdef.json
+      - aws ecs describe-task-definition --task-definition BGTaskdef --query 'taskDefinition' --output json > taskdef.json
       - echo Task definition fetched and saved to taskdef.json
 
       # Create updated appspec.yaml
@@ -33,9 +33,9 @@ phases:
           - TargetService:
               Type: AWS::ECS::Service
               Properties:
-                TaskDefinition: "arn:aws:ecs:$AWS_DEFAULT_REGION:$AWS_ACCOUNT_ID:task-definition/flask-app-final-taskdef"
+                TaskDefinition: "arn:aws:ecs:$AWS_DEFAULT_REGION:$AWS_ACCOUNT_ID:task-definition/BGTaskdef"
                 LoadBalancerInfo:
-                  ContainerName: "flask-app-final"
+                  ContainerName: "ecsbg"
                   ContainerPort: 5000
                 PlatformVersion: "LATEST"
         EOF
@@ -46,7 +46,7 @@ phases:
         cat <<EOF > imagedefinitions.json
         [
           {
-            "name": "flask-app-final",
+            "name": "ecsbg",
             "imageUri": "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG"
           }
         ]
