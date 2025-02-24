@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "arn:aws:ecs:region:account-id:task-definition/flask-app-task"
+        LoadBalancerInfo:
+          ContainerName: "flaskapp"
+          ContainerPort: 5000
