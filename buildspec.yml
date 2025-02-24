@@ -18,43 +18,15 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf'[[" ":"flask-app","imageUri":"%"]]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
 
       # Fetch the current task definition
       - echo Fetching current task definition...
       - aws ecs describe-task-definition --task-definition flaskdef --query 'taskDefinition' --output json > taskdef.json
       - echo Task definition fetched and saved to taskdef.json
 
-      # Create updated appspec.yaml
-      - echo Writing updated AppSpec file...
-      - |
-        cat <<EOF > appspec.yaml
-        version: 1.0
-        Resources:
-          - TargetService:
-              Type: AWS::ECS::Service
-              Properties:
-                TaskDefinition: "arn:aws:ecs:$AWS_DEFAULT_REGION:$AWS_ACCOUNT_ID:task-definition/flaskdef"
-                LoadBalancerInfo:
-                  ContainerName: "ecsbg"
-                  ContainerPort: 5000
-                PlatformVersion: "LATEST"
-        EOF
-
-      # Create imagedefinitions.json
-      - echo Writing image definitions file...
-      - |
-        cat <<EOF > imagedefinitions.json
-        [
-          {
-            "name": "ecsbg",
-            "imageUri": "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG"
-          }
-        ]
-        EOF
-
 artifacts:
   files:
-    - appspec.yaml
-    - taskdef.json
     - imagedefinitions.json
   discard-paths: yes
