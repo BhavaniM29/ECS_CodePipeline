@@ -19,12 +19,7 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - echo Writing image definitions file...
-      - printf'[[" ":"flask-app","imageUri":"%"]]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
-
-      # Fetch the current task definition
-      - echo Fetching current task definition...
-      - aws ecs describe-task-definition --task-definition flaskdef --query 'taskDefinition' --output json > taskdef.json
-      - echo Task definition fetched and saved to taskdef.json
+      - printf'[["name":"flaskapp","imageUri":"%"]]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
