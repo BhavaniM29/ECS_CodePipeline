@@ -7,7 +7,7 @@ patch_all()
 
 # Configure the Datadog tracer to send traces to the correct host
 tracer.configure(
-    hostname="169.254.170.2",  # Fargate metadata endpoint for inter-container communication
+    hostname="127.0.0.1",  # Fargate metadata endpoint for inter-container communication
     port=8126
 )
 
