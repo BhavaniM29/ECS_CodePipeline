@@ -3,13 +3,13 @@ FROM public.ecr.aws/docker/library/python:3.9-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the application files into the container
+# Copy application files into the container
 COPY . /app
 
-# Install dependencies
+# Upgrade pip and install dependencies
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install -r requirements.txt \
-    && pip install ddtrace  # ✅ Ensure ddtrace is installed
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir ddtrace  # ✅ Force install ddtrace
 
 # Expose port 5000 for Flask
 EXPOSE 5000
