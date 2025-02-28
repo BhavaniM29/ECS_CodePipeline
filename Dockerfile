@@ -9,7 +9,7 @@ COPY . /app
 # Upgrade pip and install dependencies
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir ddtrace  # ✅ Force install ddtrace
+    && pip install --no-cache-dir ddtrace  # ✅ Install ddtrace
 
 # Expose port 5000 for Flask
 EXPOSE 5000
