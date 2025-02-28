@@ -1,14 +1,10 @@
 from flask import Flask
 import os
-from ddtrace import patch_all, tracer
+from ddtrace import patch_all
 
 # Enable Datadog tracing for all supported libraries
 patch_all()
 
-# Configure the Datadog tracer to send traces to the correct host
-tracer.configure(
-    settings={"agent_url": "http://127.0.0.1:8126"}
-)
 app = Flask(__name__)
 
 @app.route('/')
