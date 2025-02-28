@@ -7,10 +7,8 @@ patch_all()
 
 # Configure the Datadog tracer to send traces to the correct host
 tracer.configure(
-    hostname="127.0.0.1",  # Fargate metadata endpoint for inter-container communication
-    port=8126
+    settings={"agent_url": "http://127.0.0.1:8126"}
 )
-
 app = Flask(__name__)
 
 @app.route('/')
