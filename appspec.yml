@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:region:account-id:task-definition/flask-app-task"
+        TaskDefinition: "arn:aws:ecs:region:account-id:task-definition/ddtesttaskdef"
         LoadBalancerInfo:
-          ContainerName: "flaskapp"
+          ContainerName: "flaskapptest"
           ContainerPort: 5000
