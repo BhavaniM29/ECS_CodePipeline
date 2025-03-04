@@ -1,6 +1,6 @@
 [
   {
-    "name": "flaskapp",
-    "imageUri": "904233126605.dkr.ecr.us-east-1.amazonaws.com/flaskapp:latest"
+    "name": "flaskapptest",
+    "imageUri": "904233126605.dkr.ecr.us-east-1.amazonaws.com/flaskapptest:latest"
   }
 ]
